@@ -51,7 +51,7 @@ bool CPEOPLE::isFinish() const {
 }
 
 bool CPEOPLE::isImpact(const CEntity& entity) const {
-    return m_alive && getBounds().intersects(entity.getBounds());
+    return m_alive && getBounds().findIntersection(entity.getBounds()).has_value();
 }
 
 void CPEOPLE::update(float dt) {
@@ -73,7 +73,7 @@ void CPEOPLE::draw(sf::RenderWindow& window) const {
     window.draw(body);
 
     sf::RectangleShape face({m_size.x * 0.55f, 8.f});
-    face.setPosition(m_position.x + 8.f, m_position.y + 9.f);
+    face.setPosition({m_position.x + 8.f, m_position.y + 9.f});
     face.setFillColor(sf::Color(70, 50, 35));
     window.draw(face);
 }

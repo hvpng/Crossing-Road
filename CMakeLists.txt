@@ -10,15 +10,20 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 add_executable(CrossingGame ${SOURCES})
 target_include_directories(CrossingGame PRIVATE include)
 
-# Option A: point SFML_DIR to a local SFML package.
-# Example: cmake -S . -B build -DSFML_DIR=third_party/SFML/lib/cmake/SFML
-find_package(SFML 2.6 COMPONENTS graphics window system audio REQUIRED)
-target_link_libraries(CrossingGame PRIVATE sfml-graphics sfml-window sfml-system sfml-audio)
+# Option A: point CMAKE_PREFIX_PATH/SFML_DIR to a local SFML package.
+# Example for MSYS2 UCRT64:
+# cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=D:/msys2/ucrt64
+find_package(SFML 3 COMPONENTS Graphics Window System Audio REQUIRED)
+target_link_libraries(CrossingGame PRIVATE SFML::Graphics SFML::Window SFML::System SFML::Audio)
 
 add_custom_command(TARGET CrossingGame POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy -t
+            $<TARGET_FILE_DIR:CrossingGame>
+            $<TARGET_RUNTIME_DLLS:CrossingGame>
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/assets
             $<TARGET_FILE_DIR:CrossingGame>/assets
     COMMAND ${CMAKE_COMMAND} -E make_directory
             $<TARGET_FILE_DIR:CrossingGame>/save
+    COMMAND_EXPAND_LISTS
 )

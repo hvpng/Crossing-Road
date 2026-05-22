@@ -1,4 +1,5 @@
 /build/
+/build-ninja/
 /bin/
 *.user
 *.obj

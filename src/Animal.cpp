@@ -16,7 +16,7 @@ void CANIMAL::update(float dt) {
 void CANIMAL::draw(sf::RenderWindow& window) const {
     sf::CircleShape body(m_size.y * 0.45f, 6);
     body.setPosition(m_position);
-    body.setScale(m_size.x / m_size.y, 1.f);
+    body.setScale({m_size.x / m_size.y, 1.f});
     body.setFillColor(m_color);
     body.setOutlineThickness(3.f);
     body.setOutlineColor(sf::Color(40, 35, 30));

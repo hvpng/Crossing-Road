@@ -30,7 +30,7 @@ void CVEHICLE::draw(sf::RenderWindow& window) const {
     window.draw(body);
 
     sf::RectangleShape windowRect({m_size.x * 0.32f, m_size.y * 0.36f});
-    windowRect.setPosition(m_position.x + m_size.x * 0.18f, m_position.y + m_size.y * 0.15f);
+    windowRect.setPosition({m_position.x + m_size.x * 0.18f, m_position.y + m_size.y * 0.15f});
     windowRect.setFillColor(sf::Color(190, 235, 255));
     window.draw(windowRect);
 }

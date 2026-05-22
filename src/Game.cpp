@@ -5,7 +5,10 @@
 
 CGAME::CGAME(SharedState& shared)
     : m_shared(shared) {
-    m_font.loadFromFile("assets/fonts/arial.ttf");
+    bool fontLoaded = m_font.openFromFile("assets/fonts/arial.ttf");
+    if (!fontLoaded) {
+        fontLoaded = m_font.openFromFile("C:/Windows/Fonts/arial.ttf");
+    }
     createLevel();
 }
 
@@ -208,7 +211,7 @@ void CGAME::drawMainMenu(sf::RenderWindow& window) {
     }
     for (int i = 0; i < 4; ++i) {
         sf::RectangleShape button({360.f, 58.f});
-        button.setPosition(450.f, 230.f + i * 82.f);
+        button.setPosition({450.f, 230.f + i * 82.f});
         button.setFillColor(i == index ? sf::Color(80, 130, 210) : sf::Color(45, 50, 65));
         button.setOutlineThickness(3.f);
         button.setOutlineColor(sf::Color(180, 190, 210));
@@ -228,7 +231,7 @@ void CGAME::drawMapSelect(sf::RenderWindow& window) {
     }
     for (int i = 0; i < 3; ++i) {
         sf::RectangleShape panel({1030.f, 132.f});
-        panel.setPosition(90.f, 150.f + i * 158.f);
+        panel.setPosition({90.f, 150.f + i * 158.f});
         panel.setFillColor(i == selected ? sf::Color(65, 100, 160) : sf::Color(38, 43, 58));
         panel.setOutlineThickness(3.f);
         panel.setOutlineColor(sf::Color(150, 164, 190));
@@ -237,7 +240,7 @@ void CGAME::drawMapSelect(sf::RenderWindow& window) {
         drawText(window, desc[i], {130.f, 216.f + i * 158.f}, 20, sf::Color(220, 224, 235));
 
         sf::RectangleShape sprite({118.f, 64.f});
-        sprite.setPosition(930.f, 184.f + i * 158.f);
+        sprite.setPosition({930.f, 184.f + i * 158.f});
         sprite.setFillColor(i == 0 ? sf::Color(210, 70, 58) : (i == 1 ? sf::Color(245, 205, 80) : sf::Color(160, 120, 240)));
         window.draw(sprite);
     }
@@ -251,7 +254,7 @@ void CGAME::drawNameInput(sf::RenderWindow& window) {
     }
     drawText(window, "ENTER PLAYER NAME", {350.f, 180.f}, 40, sf::Color(255, 236, 120));
     sf::RectangleShape input({520.f, 74.f});
-    input.setPosition(370.f, 310.f);
+    input.setPosition({370.f, 310.f});
     input.setFillColor(sf::Color(32, 36, 48));
     input.setOutlineThickness(4.f);
     input.setOutlineColor(sf::Color(130, 170, 230));
@@ -267,7 +270,7 @@ void CGAME::drawPlaying(sf::RenderWindow& window) {
 
     for (int i = 0; i < 4; ++i) {
         sf::RectangleShape lane({cfg::PlayWidth, cfg::LaneHeight - 8.f});
-        lane.setPosition(0.f, 138.f + i * cfg::LaneHeight);
+        lane.setPosition({0.f, 138.f + i * cfg::LaneHeight});
         lane.setFillColor(sf::Color(54, 58, 68));
         window.draw(lane);
     }
@@ -283,13 +286,13 @@ void CGAME::drawPlaying(sf::RenderWindow& window) {
 
     if (m_collisionEffect > 0.f) {
         sf::CircleShape flash(70.f);
-        flash.setPosition(m_people.getPosition().x - 50.f, m_people.getPosition().y - 50.f);
+        flash.setPosition({m_people.getPosition().x - 50.f, m_people.getPosition().y - 50.f});
         flash.setFillColor(sf::Color(255, 90, 80, 90));
         window.draw(flash);
     }
 
     sf::RectangleShape sidebar({cfg::SidebarWidth, static_cast<float>(cfg::WindowHeight)});
-    sidebar.setPosition(cfg::PlayWidth, 0.f);
+    sidebar.setPosition({cfg::PlayWidth, 0.f});
     sidebar.setFillColor(sf::Color(25, 28, 38));
     window.draw(sidebar);
     drawText(window, "PLAYER", {cfg::PlayWidth + 28.f, 70.f}, 20, sf::Color(145, 160, 190));
@@ -308,7 +311,7 @@ void CGAME::drawPauseMenu(sf::RenderWindow& window) {
     window.draw(overlay);
 
     sf::RectangleShape popup({430.f, 470.f});
-    popup.setPosition(420.f, 120.f);
+    popup.setPosition({420.f, 120.f});
     popup.setFillColor(sf::Color(34, 38, 52));
     popup.setOutlineThickness(4.f);
     popup.setOutlineColor(sf::Color(210, 220, 235));
@@ -363,7 +366,7 @@ void CGAME::drawHelp(sf::RenderWindow& window) {
 
 void CGAME::drawText(sf::RenderWindow& window, const std::string& text, sf::Vector2f pos, unsigned size, sf::Color color) {
     if (!m_font.getInfo().family.empty()) {
-        sf::Text sfText(text, m_font, size);
+        sf::Text sfText(m_font, text, size);
         sfText.setPosition(pos);
         sfText.setFillColor(color);
         window.draw(sfText);

@@ -14,22 +14,22 @@ void CTRAFFICLIGHT::update(float dt) {
 
 void CTRAFFICLIGHT::draw(sf::RenderWindow& window) const {
     sf::RectangleShape pole({16.f, 82.f});
-    pole.setPosition(cfg::PlayWidth - 54.f, 74.f);
+    pole.setPosition({cfg::PlayWidth - 54.f, 74.f});
     pole.setFillColor(sf::Color(60, 63, 70));
     window.draw(pole);
 
     sf::RectangleShape box({44.f, 78.f});
-    box.setPosition(cfg::PlayWidth - 68.f, 44.f);
+    box.setPosition({cfg::PlayWidth - 68.f, 44.f});
     box.setFillColor(sf::Color(32, 34, 40));
     window.draw(box);
 
     sf::CircleShape red(13.f);
-    red.setPosition(cfg::PlayWidth - 53.f, 52.f);
+    red.setPosition({cfg::PlayWidth - 53.f, 52.f});
     red.setFillColor(isRed() ? sf::Color(255, 55, 55) : sf::Color(90, 30, 30));
     window.draw(red);
 
     sf::CircleShape green(13.f);
-    green.setPosition(cfg::PlayWidth - 53.f, 86.f);
+    green.setPosition({cfg::PlayWidth - 53.f, 86.f});
     green.setFillColor(isRed() ? sf::Color(25, 75, 30) : sf::Color(70, 235, 95));
     window.draw(green);
 }

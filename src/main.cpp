@@ -91,9 +91,10 @@ int main() {
     SharedState shared;
 
     sf::RenderWindow window(
-        sf::VideoMode(cfg::WindowWidth, cfg::WindowHeight),
+        sf::VideoMode({cfg::WindowWidth, cfg::WindowHeight}),
         "Crossing Game",
-        sf::Style::Fullscreen);
+        sf::Style::None,
+        sf::State::Fullscreen);
     window.setFramerateLimit(0);
     window.setVerticalSyncEnabled(true);
 
@@ -102,34 +103,34 @@ int main() {
     std::thread worker(SubThread, std::ref(window), std::ref(shared));
 
     while (window.isOpen()) {
-        sf::Event event{};
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
+        while (const auto event = window.pollEvent()) {
+            if (event->is<sf::Event::Closed>()) {
                 std::lock_guard<std::mutex> lock(shared.mutex);
                 shared.isRunning = false;
                 window.close();
             }
 
-            if (event.type == sf::Event::TextEntered) {
+            if (const auto* textEntered = event->getIf<sf::Event::TextEntered>()) {
                 std::lock_guard<std::mutex> lock(shared.mutex);
                 if (shared.scene == Scene::NameInput) {
-                    if (event.text.unicode == 8 && !shared.playerName.empty()) {
+                    if (textEntered->unicode == 8 && !shared.playerName.empty()) {
                         shared.playerName.pop_back();
-                    } else if (event.text.unicode >= 32 && event.text.unicode < 127 && shared.playerName.size() < 18) {
-                        shared.playerName.push_back(static_cast<char>(event.text.unicode));
+                    } else if (textEntered->unicode >= 32 && textEntered->unicode < 127 && shared.playerName.size() < 18) {
+                        shared.playerName.push_back(static_cast<char>(textEntered->unicode));
                     }
                 }
             }
 
-            if (event.type != sf::Event::KeyPressed) {
+            const auto* keyPressed = event->getIf<sf::Event::KeyPressed>();
+            if (!keyPressed) {
                 continue;
             }
 
-            const auto key = event.key.code;
+            const auto key = keyPressed->code;
             {
                 std::lock_guard<std::mutex> lock(shared.mutex);
 
-                if (key == sf::Keyboard::Escape) {
+                if (key == sf::Keyboard::Key::Escape) {
                     if (shared.scene == Scene::Playing) {
                         shared.scene = Scene::PauseMenu;
                         shared.isPaused = true;
@@ -139,39 +140,39 @@ int main() {
                     }
                 }
 
-                if (key == sf::Keyboard::P && (shared.scene == Scene::Playing || shared.scene == Scene::PauseMenu)) {
+                if (key == sf::Keyboard::Key::P && (shared.scene == Scene::Playing || shared.scene == Scene::PauseMenu)) {
                     shared.isPaused = !shared.isPaused;
                     shared.scene = shared.isPaused ? Scene::PauseMenu : Scene::Playing;
                 }
 
                 if (shared.scene == Scene::Playing) {
-                    if (key == sf::Keyboard::W) shared.moving = Direction::Up;
-                    if (key == sf::Keyboard::A) shared.moving = Direction::Left;
-                    if (key == sf::Keyboard::S) shared.moving = Direction::Down;
-                    if (key == sf::Keyboard::D) shared.moving = Direction::Right;
+                    if (key == sf::Keyboard::Key::W) shared.moving = Direction::Up;
+                    if (key == sf::Keyboard::Key::A) shared.moving = Direction::Left;
+                    if (key == sf::Keyboard::Key::S) shared.moving = Direction::Down;
+                    if (key == sf::Keyboard::Key::D) shared.moving = Direction::Right;
                 }
 
                 if (shared.scene == Scene::MainMenu || shared.scene == Scene::PauseMenu) {
                     const int maxItems = shared.scene == Scene::MainMenu ? 4 : 6;
-                    if (key == sf::Keyboard::Up) shared.menuIndex--;
-                    if (key == sf::Keyboard::Down) shared.menuIndex++;
+                    if (key == sf::Keyboard::Key::Up) shared.menuIndex--;
+                    if (key == sf::Keyboard::Key::Down) shared.menuIndex++;
                     clampMenu(shared, maxItems);
                 }
 
                 if (shared.scene == Scene::MapSelect) {
-                    if (key == sf::Keyboard::Up) shared.selectedMap = (shared.selectedMap + 2) % 3;
-                    if (key == sf::Keyboard::Down) shared.selectedMap = (shared.selectedMap + 1) % 3;
-                    if (key == sf::Keyboard::Enter) shared.scene = Scene::NameInput;
-                } else if (shared.scene == Scene::NameInput && key == sf::Keyboard::Enter) {
+                    if (key == sf::Keyboard::Key::Up) shared.selectedMap = (shared.selectedMap + 2) % 3;
+                    if (key == sf::Keyboard::Key::Down) shared.selectedMap = (shared.selectedMap + 1) % 3;
+                    if (key == sf::Keyboard::Key::Enter) shared.scene = Scene::NameInput;
+                } else if (shared.scene == Scene::NameInput && key == sf::Keyboard::Key::Enter) {
                     shared.scene = Scene::Playing;
                     shared.isPaused = false;
                 } else if (shared.scene == Scene::Setting) {
-                    if (key == sf::Keyboard::B) shared.bgmEnabled = !shared.bgmEnabled;
-                    if (key == sf::Keyboard::S) shared.sfxEnabled = !shared.sfxEnabled;
+                    if (key == sf::Keyboard::Key::B) shared.bgmEnabled = !shared.bgmEnabled;
+                    if (key == sf::Keyboard::Key::S) shared.sfxEnabled = !shared.sfxEnabled;
                 }
             }
 
-            if (key == sf::Keyboard::Enter) {
+            if (key == sf::Keyboard::Key::Enter) {
                 handleMenuEnter(shared);
             }
         }
