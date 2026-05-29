@@ -1,29 +1,19 @@
-cmake_minimum_required(VERSION 3.20)
-project(CrossingGame LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.10) 
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+project(CROSSINGGAME) 
+set(CMAKE_CXX_STANDARD 17) 
+set(CMAKE_CXX_STANDARD_REQUIRED ON) 
+# Tự động lấy tất cả file cpp trong src/ 
 
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
+file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS src/*.cpp) 
 
-add_executable(CrossingGame ${SOURCES})
-target_include_directories(CrossingGame PRIVATE include)
+add_executable( CROSSINGGAME ${SRC_FILES} ) 
 
-# Option A: point CMAKE_PREFIX_PATH/SFML_DIR to a local SFML package.
-# Example for MSYS2 UCRT64:
-# cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=D:/msys2/ucrt64
-find_package(SFML 3 COMPONENTS Graphics Window System Audio REQUIRED)
-target_link_libraries(CrossingGame PRIVATE SFML::Graphics SFML::Window SFML::System SFML::Audio)
+# Include headers 
+target_include_directories( CROSSINGGAME PRIVATE include ) 
 
-add_custom_command(TARGET CrossingGame POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy -t
-            $<TARGET_FILE_DIR:CrossingGame>
-            $<TARGET_RUNTIME_DLLS:CrossingGame>
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/assets
-            $<TARGET_FILE_DIR:CrossingGame>/assets
-    COMMAND ${CMAKE_COMMAND} -E make_directory
-            $<TARGET_FILE_DIR:CrossingGame>/save
-    COMMAND_EXPAND_LISTS
-)
+# Copy assets vào build/ 
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}) 
+
+# Windows multimedia library (PlaySound) 
+target_link_libraries( CROSSINGGAME winmm )

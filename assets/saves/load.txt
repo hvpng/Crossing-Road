@@ -1,0 +1,9 @@
+hoabes;2;50
+testlan2;2;50
+testlan1;1;0
+hoabeo;1;0
+nhathoabeo;1;0
+nhathoa123;1;0
+hoabeo123;1;0
+hoa123;1;0
+hoa;1;0
